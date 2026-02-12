@@ -65,7 +65,7 @@ def main() -> None:
         elif line.startswith("/leave"):
             parts = line.split(maxsplit=1)
             if len(parts) < 2:
-                print("Usage: /join <channel>")
+                print("Usage: /leave <channel>")
                 continue
             channel = parts[1].strip()
 
@@ -85,7 +85,7 @@ def main() -> None:
         elif line.startswith("/switch"):
             parts = line.split(maxsplit=1)
             if len(parts) < 2:
-                print("Usage: /join <channel>")
+                print("Usage: /switch <channel>")
                 continue
             channel = parts[1].strip()
 
@@ -105,7 +105,7 @@ def main() -> None:
         elif line.startswith("/who"):
             parts = line.split(maxsplit=1)
             if len(parts) < 2:
-                print("Usage: /join <channel>")
+                print("Usage: /who <channel>")
                 continue
             channel = parts[1].strip()
 
