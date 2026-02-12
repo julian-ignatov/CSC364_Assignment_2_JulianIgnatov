@@ -116,7 +116,6 @@ def main() -> None:
         elif line == "/exit":
             sock.sendto(struct.pack("!I", LOGOUT), (host, port))
             last_send_time[0] = time.time()
-            print("Goodbye.")
             break
 
         elif line.startswith("/"):
@@ -188,8 +187,8 @@ def receive_loop(sock: socket.socket):
 
 def keepalive_loop(sock, host, port, last_send_time):
     while True:
-        time.sleep(5)
-        if time.time() - last_send_time[0] > 60:
+        time.sleep(60)
+        if time.time() - last_send_time[0] >= 60:
             sock.sendto(pack_keepalive(), (host, port))
             last_send_time[0] = time.time()
             

@@ -23,27 +23,35 @@ def main() -> None:
     addr_to_user = {}   # address -> username
     last_activity = {}  
 
-    sock.settimeout(5)
+    sock.settimeout(1)
+    last_cleanup = time.time()
     while True:
         try:
             data, addr = sock.recvfrom(4096)
         except socket.timeout:
-            now = time.time()
+            if time.time() - last_cleanup >= 120:
+                now = time.time()
 
-            for addr, t in list(last_activity.items()):
-                if now - t > 120:
-                    username = addr_to_user.get(addr)
-                    if username:
-                        print(f"Timing out {username}")
+                for addr, t in list(last_activity.items()):
+                    if now - t > 120:
+                        username = addr_to_user.get(addr)
+                        if username:
+                            print(f"Timing out {username}")
 
-                        for ch in user_channels.get(username, []):
-                            channels[ch].discard(username)
+                            for ch in list(user_channels.get(username, [])):
+                                if ch in channels:
+                                    channels[ch].discard(username)
+                                    if not channels[ch]:
+                                        del channels[ch]
 
-                        user_channels.pop(username, None)
-                        addr_to_user.pop(addr, None)
-                        last_activity.pop(addr, None)
-
+                            user_channels.pop(username, None)
+                            users.pop(username, None)
+                            addr_to_user.pop(addr, None)
+                            last_activity.pop(addr, None)
+                
+                last_cleanup = time.time()
             continue
+        
         last_activity[addr] = time.time()
 
         if len(data) < 4:
@@ -98,7 +106,7 @@ def main() -> None:
             if channel in channels and username in channels[channel]:
                 channels[channel].remove(username)
 
-                if channel in user_channels:
+                if username in user_channels:
                     user_channels[username].discard(channel)
 
                 if not channels[channel]:
@@ -176,6 +184,15 @@ def main() -> None:
             username = addr_to_user.get(addr)
             if username:
                 print(f"{username} logged out")
+                
+                for ch in list(user_channels.get(username, [])):
+                    if ch in channels:
+                        channels[ch].discard(username)
+                        if not channels[ch]:
+                            del channels[ch]
+                
+                user_channels.pop(username, None)
+                users.pop(username, None)
                 addr_to_user.pop(addr, None)
                 last_activity.pop(addr, None)
 
