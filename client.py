@@ -156,13 +156,13 @@ def receive_loop(sock: socket.socket):
             username = data[36:68].rstrip(b'\0').decode()
             text = data[68:132].rstrip(b'\0').decode()
 
-            print(f"\n[{channel}][{username}]: {text}")
+            print(f"\r[{channel}][{username}]: {text}")
             print("> ", end="", flush=True)
         
         elif msg_type == LIST_RESP:
             count = struct.unpack("!I", data[4:8])[0]
 
-            print("\nExisting channels:")
+            print("\rExisting channels:")
             offset = 8
             for _ in range(count):
                 channel = data[offset:offset+32].rstrip(b'\0').decode()
@@ -175,7 +175,7 @@ def receive_loop(sock: socket.socket):
             count = struct.unpack("!I", data[4:8])[0]
             channel = data[8:40].rstrip(b'\0').decode()
 
-            print(f"\nUsers on channel {channel}:")
+            print(f"\rUsers on channel {channel}:")
 
             offset = 40
             for _ in range(count):
